@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 public class wealtherDB {
 public static final String DB_NAME="wealther";
@@ -20,9 +21,10 @@ private static wealtherDB wealtherDB;
 private SQLiteDatabase db;
 private char[] provincedId;
 private char[] cityId;
+private SQLiteOpenHelper dbhHelper;
 private wealtherDB(Context context){
 	wealtherOpenhelper dbhelper=new wealtherOpenhelper(context, DB_NAME, null, VERSION);
-	db=dbhelper.getWritableDatabase();
+	db=dbhHelper.getWritableDatabase();
 }
 public synchronized static wealtherDB getInstance(Context context) {
 	if(wealtherDB==null){
