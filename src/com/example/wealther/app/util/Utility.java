@@ -1,11 +1,21 @@
 package com.example.wealther.app.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.SynchronousQueue;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.example.wealther.app.db.wealtherDB;
 import com.example.wealther.app.model.city;
 import com.example.wealther.app.model.county;
 import com.example.wealther.app.model.province;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
 
@@ -54,4 +64,34 @@ public synchronized static boolean handlecountyResponse(wealtherDB wealtherDB,St
 		}
 	}
 	return false;}
+public static void handleWealtherResponse(Context context,String response) {
+	// TODO Auto-generated method stub
+try{JSONObject jsonobject=new JSONObject(response);
+JSONObject wealtherInfo=jsonobject.getJSONObject("wealtherinfo");
+String cityName=wealtherInfo.getString("city");
+String wealtherCode=wealtherInfo.getString("cityid");
+String temp1=wealtherInfo.getString("temp1");
+String temp2=wealtherInfo.getString("temp2");
+String wealtherDesp=wealtherInfo.getString("wealther");
+String publishTime=wealtherInfo.getString("ptime");
+saveWealtherInfo(context,cityName,wealtherCode,temp1,temp2,wealtherDesp,publishTime);}catch(JSONException e){
+	e.printStackTrace();
+}
+}
+public static void saveWealtherInfo(Context context, String cityName,
+		String wealtherCode, String temp1, String temp2, String wealtherDesp,
+		String publishTime) {
+	// TODO Auto-generated method stub
+	SimpleDateFormat sdf=new SimpleDateFormat("yyyyƒÍM‘¬d»’",Locale.CHINA);
+	SharedPreferences.Editor editor=PreferenceManager.getDefaultSharedPreferences(context).edit();
+	editor.putBoolean("city_selected",true);
+	editor.putString("city_name",cityName);
+	editor.putString("wealther_code",wealtherCode);
+	editor.putString("temp1", temp1);
+	editor.putString("temp2",temp2);
+	editor.putString("wealtherDesp", wealtherDesp);
+	editor.putString("publish_time",publishTime);
+	editor.putString("current_daye",sdf.format(new Date()));
+	editor.commit();
+}
 }

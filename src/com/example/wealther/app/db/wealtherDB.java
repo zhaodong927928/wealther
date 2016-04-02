@@ -19,12 +19,11 @@ public static final String DB_NAME="wealther";
 public static final int VERSION=1;
 private static wealtherDB wealtherDB;
 private SQLiteDatabase db;
-private char[] provincedId;
-private char[] cityId;
-private SQLiteOpenHelper dbhHelper;
+
+
 private wealtherDB(Context context){
 	wealtherOpenhelper dbhelper=new wealtherOpenhelper(context, DB_NAME, null, VERSION);
-	db=dbhHelper.getWritableDatabase();
+	db=dbhelper.getWritableDatabase();
 }
 public synchronized static wealtherDB getInstance(Context context) {
 	if(wealtherDB==null){
@@ -68,7 +67,7 @@ if (city!=null){
 }
 public List<city> loadCities(int provinceId){
 	List<city> list=new ArrayList<city>();
-	Cursor cursor=db.query("City",null,"province_id=?",new String[]{String.valueOf(provincedId)},null,null,null);
+	Cursor cursor=db.query("City",null,"province_id=?",new String[]{String.valueOf(provinceId)},null,null,null);
 	if(cursor.moveToFirst()){
 		do{
 			city city=new city();

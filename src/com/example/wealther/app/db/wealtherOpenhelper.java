@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class wealtherOpenhelper extends SQLiteOpenHelper{
-	public static final String CREATE_PROVINCE="create table Province (id Integer primary key autocrement,province_name text,province_code text)";
-	public static final String CREATE_CITY="create table City (id Integer primary key autocrement,city_name text,citye_code text,province_id Integer)";
-	public static final String CREATE_COUNTY="create table County (id Integer primary key autocrement,county_name text,county_code text,city_id Integer)";
+	public static final String CREATE_PROVINCE="create table Province (id Integer primary key autoincrement,province_name text,province_code text)";
+	public static final String CREATE_CITY="create table City (id Integer primary key autoincrement,city_name text,citye_code text,province_id Integer)";
+	public static final String CREATE_COUNTY="create table County (id Integer primary key autoincrement,county_name text,county_code text,city_id Integer)";
 	private SQLiteDatabase db;
 public wealtherOpenhelper(Context context, String name,
 			CursorFactory factory, int version) {
@@ -18,14 +18,14 @@ public wealtherOpenhelper(Context context, String name,
 	}
 
 @Override
-public void onCreate(SQLiteDatabase arg0) {
+public void onCreate(SQLiteDatabase db) {
 	// TODO Auto-generated method stub
 	db.execSQL(CREATE_PROVINCE);
 	db.execSQL(CREATE_CITY);
 	db.execSQL(CREATE_COUNTY);
 }
 @Override
-public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
+public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 	// TODO Auto-generated method stub
 	
 }

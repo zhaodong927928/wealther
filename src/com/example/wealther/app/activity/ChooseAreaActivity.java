@@ -15,7 +15,10 @@ import com.example.wealther.app.util.Utility;
 import android.app.Activity;
 import android.app.DownloadManager.Query;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -30,6 +33,7 @@ public class ChooseAreaActivity extends Activity{
 public static final int LEVEL_PROVINCE=0;
 public static final int LEVEL_CIRY=1;
 public static final int LEVEL_COUNTY=2;
+protected static final int index = 0;
 private ProgressDialog progressDialog;
 private TextView titleText;
 private ListView listView;
@@ -39,18 +43,25 @@ private List<String> dataList=new ArrayList<String>();
 private List<province> provinceList;
 private List<city> cityList;
 private List<county> countyList;
-private province selelctedProvince;
-private city selelctedCity;
+private province selectedProvince;
+private boolean isFromWealtherActivity;
 private int currentLevel;
-protected int index;
 private city selectedCity;
-private CharSequence code;
 
-@SuppressWarnings("static-access")
+
+
 @Override
 protected void onCreate(Bundle savedInstanceState) {
 	// TODO Auto-generated method stub
 	super.onCreate(savedInstanceState);
+	isFromWealtherActivity=getIntent().getBooleanExtra("from_wealther_activity", false);
+	SharedPreferences prefs=PreferenceManager.getDefaultSharedPreferences(this);
+	if(prefs.getBoolean("city_selected",false&&!isFromWealtherActivity)){
+		Intent intent =new Intent(this,WealtherActivity.class);
+		startActivity(intent);
+		finish();
+		return;
+	}
 	requestWindowFeature(Window.FEATURE_NO_TITLE);
 	setContentView(R.layout.choose_area);
 	listView=(ListView) findViewById(R.id.list_view);
@@ -64,11 +75,17 @@ protected void onCreate(Bundle savedInstanceState) {
 				long arg3) {
 			// TODO Auto-generated method stub
 					if(currentLevel==LEVEL_PROVINCE){
-						selelctedProvince=provinceList.get(index);
+						selectedProvince=provinceList.get(index);
 						queryCities();
 					}else if(currentLevel==LEVEL_CIRY){
-						selelctedCity=cityList.get(index);
+						selectedCity=cityList.get(index);
 						queryCounties();
+					}else if(currentLevel==LEVEL_COUNTY){
+						String countyCode=countyList.get(index).getCountyCode();
+						Intent intent=new Intent(ChooseAreaActivity.this,WealtherActivity.class);
+						intent.putExtra("county_code",countyCode);
+						startActivity(intent);
+						finish();
 					}
 					}
 	});queryProvinces();
@@ -93,17 +110,17 @@ private void queryProvinces() {
 
 protected void queryCities() {
 	// TODO Auto-generated method stub
-	cityList=wealtherDB.loadCities(selelctedProvince.getId());
+	cityList=wealtherDB.loadCities(selectedProvince.getId());
 	if(cityList.size()>0){
 		dataList.clear();
 		for(city city:cityList){
 			dataList.add(city.getCityName());
 		}adapter.notifyDataSetChanged();
 		listView.setSelection(0);
-		titleText.setText(selelctedProvince.getProvincename());
+		titleText.setText(selectedProvince.getProvincename());
 		currentLevel=LEVEL_CIRY;
 	}else{
-		queryFromServer(selelctedProvince.getProvincecode(),"city");
+		queryFromServer(selectedProvince.getProvincecode(),"city");
 	}
 }
 
@@ -115,7 +132,7 @@ private String getProvinceCode() {
 
 protected void queryCounties() {
 	// TODO Auto-generated method stub
-	countyList=wealtherDB.loadCounties(selelctedCity.getId());
+	countyList=wealtherDB.loadCounties(selectedCity.getId());
 	if(countyList.size()>0){
 		dataList.clear();
 		for(county county:countyList){
@@ -123,14 +140,14 @@ protected void queryCounties() {
 		}
 		adapter.notifyDataSetChanged();
 		listView.setSelection(0);
-		titleText.setText(selelctedCity.getCityName());
+		titleText.setText(selectedCity.getCityName());
 		currentLevel=LEVEL_COUNTY;
 	}else{
 		queryFromServer(selectedCity.getCityCode(),"county");
 	}
 }
 
-private void queryFromServer(final String cityCode,final String type) {
+private void queryFromServer(final String code,final String type) {
 	// TODO Auto-generated method stub
 	String address;
 	if(!TextUtils.isEmpty(code)){
@@ -146,7 +163,7 @@ boolean result=false;
 if("province".equals(type)){
 	result=Utility.handleprovinceResponse(wealtherDB,response);
 }else if("city".equals(type)){
-	result=Utility.handlecityResponse(wealtherDB,response,selelctedProvince.getId());
+	result=Utility.handlecityResponse(wealtherDB,response,selectedProvince.getId());
 }else if("county".equals(type)){
 	result=Utility.handlecountyResponse(wealtherDB,response,selectedCity.getId());
 }if(result){
@@ -199,6 +216,10 @@ if(progressDialog!=null){
 			queryCities();
 		}else if(currentLevel==LEVEL_CIRY){
 			queryProvinces();
-		}else{finish();}
+		}else{
+			if(isFromWealtherActivity){
+				Intent intent=new Intent(this,WealtherActivity.class);
+				startActivity(intent);
+			}finish();}
 	}
 }
