@@ -2,6 +2,7 @@ package com.example.wealther.app.activity;
 
 
 import com.example.wealther.R;
+import com.example.wealther.app.service.AutoUpdateService;
 import com.example.wealther.app.util.HttpCallbackListener;
 import com.example.wealther.app.util.HttpUtil;
 import com.example.wealther.app.util.Utility;
@@ -62,10 +63,12 @@ private void showWealther() {
 	temp1Text.setText(prefs.getString("temp1",""));
 	temp2Text.setText(prefs.getString("temp2",""));
 	wealtherDespText.setText(prefs.getString("wealther_desp",""));
-	publishText.setText(prefs.getString("publish_time",""));
+	publishText.setText("今天" + prefs.getString("publish_time","") + "发布");
 	currentDataText.setText(prefs.getString("current_data", ""));
 	wealtherInfoLayout.setVisibility(View.VISIBLE);
 	cityNameText.setVisibility(View.VISIBLE);
+	Intent intent=new Intent(this,AutoUpdateService.class);
+	startService(intent);
 }
 private void queryWealtherCode(String countyCode) {
 	// TODO Auto-generated method stub

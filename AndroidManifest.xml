@@ -21,6 +21,8 @@
             </intent-filter>
         </activity>
         <activity android:name="com.example.wealther.app.activity.WealtherActivity"></activity>
-    </application>
+   <service android:name="com.example.wealther.app.service.AutoUpdateService"></service>
+   <receiver android:name="com.example.wealther.app.receiver.AutoUpdateReceiver"></receiver>
+        </application>
 
 </manifest>
